@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+pypdf2
+llama-index
+llama-index-embeddings-huggingface
+transformers>=4.43.2 
+torch
+bitsandbytes
+accelerate
+llama-index-llms-huggingface
+virtualenv
+openai
+pandas
+numpy
+pytest-asyncio==0.23.5
+aiohttp==3.9.1
+
