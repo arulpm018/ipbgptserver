@@ -89,23 +89,3 @@ async def chat_with_document(chat_query: ChatQuery, llm):
         return JSONResponse(content={"response": str(response)})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-async def combined_query_and_chat(combined_query: CombinedQuery, index, llm):
-    start_time = time.time()
-    
-    try:
-        chat_history = "\n".join(f"{msg.role}: {msg.content}" for msg in combined_query.chat_history)
-        
-        related_docs = await get_related_documents(ThesisTitle(title=combined_query.query, number=4), index)
-        context = "\n".join(f"Judul: {doc['judul']} Abstrak: {doc['abstrak']} URL: {doc['url']}" for doc in related_docs["related_documents"])
-        
-        prompt = generate_academic_answer_prompt(chat_history, context, combined_query.query)
-        response = await asyncio.to_thread(llm.complete, prompt)
-        
-        process_time = time.time() - start_time
-        print(f"Combined query and chat request took {process_time:.4f} seconds")
-
-        return JSONResponse(content={"response": str(response)})
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
