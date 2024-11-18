@@ -1,7 +1,6 @@
 python-multipart
 fastapi
 uvicorn
-pypdf2
 llama-index
 llama-index-embeddings-huggingface
 transformers>=4.43.2 
@@ -10,12 +9,9 @@ bitsandbytes
 accelerate
 llama-index-llms-huggingface
 virtualenv
-openai
 pandas
 numpy
 llama-index-vector-stores-chroma
 chromadb
 sentence-transformers
 pydantic
-pyngrok
-
