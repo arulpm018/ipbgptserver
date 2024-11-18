@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 
 class ThesisTitle(BaseModel):
     title: str
@@ -15,10 +15,4 @@ class ChatQuery(BaseModel):
     chat_history: List[ChatMessage]
 
 
-class Query(BaseModel):
-    question: str
 
-class CombinedQuery(BaseModel):
-    query: str
-    chat_history: List[ChatMessage]
-    context: Optional[str] = None
