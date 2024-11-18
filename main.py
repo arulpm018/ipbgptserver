@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import Settings
@@ -8,16 +8,11 @@ from transformers import AutoTokenizer, BitsAndBytesConfig
 from llama_index.llms.huggingface import HuggingFaceLLM
 import chromadb
 import torch
-from pyngrok import ngrok
-import asyncio
-
-from pdf_chat import pdf_manager
-from document_chat import chat_with_document, combined_query_and_chat, get_related_documents
-from models import ThesisTitle, ChatQuery, CombinedQuery
+from document_chat import chat_with_document, get_related_documents
+from models import ThesisTitle, ChatQuery
 
 app = FastAPI()
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,12 +21,12 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-hf_key = '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'
+hf_key = 'HF_KEY'
 
-embed_model = "../finetuning/finalmodel/Alibaba-NLP/gte-base-en-v1.5_2/"
+embed_model = "/app/model/"
 Settings.embed_model = HuggingFaceEmbedding(model_name=embed_model, trust_remote_code=True)
 
-db2 = chromadb.PersistentClient(path="../vector_store/chromadb/chroma_db2")
+db2 = chromadb.PersistentClient(path="/app/vector_store")
 chroma_collection = db2.get_or_create_collection("LMITD2")
 vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 index = VectorStoreIndex.from_vector_store(vector_store)
@@ -80,13 +75,6 @@ def get_llm():
 llm = get_llm()
 
 
-@app.post("/upload-pdf/")
-async def api_upload_pdf(file: UploadFile = File(...)):
-    return await pdf_manager.upload_pdf(file)
-
-@app.post("/chat-with-pdf/")
-async def api_chat_with_pdf(combined_query: CombinedQuery):
-    return await pdf_manager.chat_with_pdf(query, llm)
 @app.post("/chat/")
 async def api_chat_with_document(chat_query: ChatQuery):
     try:
@@ -96,27 +84,7 @@ async def api_chat_with_document(chat_query: ChatQuery):
         print(f"Error in /chat/: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/combined-query-chat/")
-async def api_combined_query_and_chat(combined_query: CombinedQuery):
-    try:
-        result = await combined_query_and_chat(combined_query, index, llm)
-        return result
-    except Exception as e:
-        print(f"Error in /combined-query-chat/: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 @app.post("/related_documents/")
 async def api_get_related_documents(thesis: ThesisTitle):
     return await get_related_documents(thesis, index)
 
-
-
-if __name__ == "__main__":
-    ngrok_token = "2nSpYcmtCLZVJsM35rjSQLDLkBI_2QSsndBQcWEAxNRpWyvSc"
-    ngrok.set_auth_token(ngrok_token)
-    ngrok_tunnel = ngrok.connect(8000)
-    print('Public URL:', ngrok_tunnel.public_url)
-    import nest_asyncio
-    nest_asyncio.apply()
-    #import uvicorn
-    #uvicorn.run(app, host="0.0.0.0", port=8000)
