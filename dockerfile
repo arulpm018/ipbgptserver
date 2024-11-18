@@ -16,7 +16,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Create directories for models and vector store
-RUN mkdir -p /app/models/embedding
+RUN mkdir -p /app/model/
 RUN mkdir -p /app/vector_store
 
 EXPOSE 8000
