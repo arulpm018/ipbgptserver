@@ -21,12 +21,12 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-hf_key = 'HF_KEY'
+hf_key = os.getenv("HF_KEY")
 
-embed_model = "/app/model/"
+embed_model = "model/"
 Settings.embed_model = HuggingFaceEmbedding(model_name=embed_model, trust_remote_code=True)
 
-db2 = chromadb.PersistentClient(path="/app/vector_store")
+db2 = chromadb.PersistentClient(path="/vector_store")
 chroma_collection = db2.get_or_create_collection("LMITD2")
 vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 index = VectorStoreIndex.from_vector_store(vector_store)
@@ -34,7 +34,6 @@ index = VectorStoreIndex.from_vector_store(vector_store)
 model_name = "meta-llama/Llama-3.2-3B-Instruct"
 
 def get_llm():
-    torch.cuda.set_per_process_memory_fraction(0.1, 0)
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_compute_dtype=torch.bfloat16,
