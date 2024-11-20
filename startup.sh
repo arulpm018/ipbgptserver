@@ -1,8 +1,13 @@
 #!/bin/bash
 
-# Download embedding model and vector store from GCS
-gsutil -m cp -r gs://[BUCKET_NAME]/model/* /app/models/embedding/
-gsutil -m cp -r gs://[BUCKET_NAME]/vector_store/* /app/vector_store/
+
+sudo mkdir -p model
+sudo mkdir -p vector_store
+sudo gsutil -m cp -r gs://ipbgptbucket/model/* model/
+sudo gsutil -m cp -r gs://ipbgptbucket/vector_store/* vector_store/
+
+sudo git clone https://github.com/arulpm018/ipbgptserver.git
+pip install -r requirements.txt
 
 # Start the FastAPI application
 exec uvicorn main:app --host 0.0.0.0 --port 8000
