@@ -1,7 +1,6 @@
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
-from models import ChatQuery, CombinedQuery, ThesisTitle
-import asyncio
+from models import ChatQuery, ThesisTitle
 import time
 
 async def get_related_documents(thesis: ThesisTitle, index):
@@ -81,7 +80,7 @@ async def chat_with_document(chat_query: ChatQuery, llm):
         limited_chat_history = chat_query.chat_history[-3:]
         chat_history = "\n".join(f"{msg.role}: {msg.content}" for msg in limited_chat_history)
         prompt = generate_academic_answer_prompt(chat_history, chat_query.context, chat_query.query)
-        response = await asyncio.to_thread(llm.complete, prompt)
+        response = llm.complete(prompt)
 
         process_time = time.time() - start_time
         print(f"Chat with document request took {process_time:.4f} seconds")
