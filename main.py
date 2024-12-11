@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, BitsAndBytesConfig
 from llama_index.llms.huggingface import HuggingFaceLLM
 import chromadb
 import torch
-from document_chat import chat_with_document, get_related_documents
+from services import chat_with_document, get_related_documents
 from models import ThesisTitle, ChatQuery
 
 app = FastAPI()
