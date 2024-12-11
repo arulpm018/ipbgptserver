@@ -3,36 +3,6 @@ from fastapi.responses import JSONResponse
 from models import ChatQuery, ThesisTitle
 import time
 
-async def get_related_documents(thesis: ThesisTitle, index):
-    try:
-        related_documents = index.as_retriever(similarity_top_k=thesis.number).retrieve(thesis.title)
-        
-        results = []
-        for doc in related_documents:
-            text = doc.text
-            url_start = text.find("url")
-            url_end = text.find("\n", url_start)
-            url = text[url_start + len("url:"):url_end].strip() if url_start != -1 else "No URL"
-
-            abstrak_start = text.find("Abstrak:")
-            abstrak_text = text[abstrak_start + len("Abstrak:"):].strip()
-            kata_kata = abstrak_text.split()
-            abstrak_20_kata = ' '.join(kata_kata[:20]) + '.....'
-
-            author_start = text.find("Author:")
-            judul_start = text.find("Judul:")
-            judul = text[judul_start + len("Judul:"):author_start].strip()
-
-            results.append({
-                "judul": judul,
-                "abstrak": abstrak_text,
-                "url": url
-            })
-
-        return {"related_documents": results}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 def generate_academic_answer_prompt(chat_history: str, context: str, query: str, is_follow_up: bool = False) -> str:
     prompt = f"""
 You are a knowledgeable and friendly assistant that answers questions based on academic paper abstracts from a university repository.
@@ -73,6 +43,37 @@ Format ALL responses consistently using these guidelines:
         formatting_instructions += follow_up_instruction
 
     return f"{formatting_instructions}\n\nUser query: {prompt}\n\nFormatted response:"
+
+async def get_related_documents(thesis: ThesisTitle, index):
+    try:
+        related_documents = index.as_retriever(similarity_top_k=thesis.number).retrieve(thesis.title)
+        
+        results = []
+        for doc in related_documents:
+            text = doc.text
+            url_start = text.find("url")
+            url_end = text.find("\n", url_start)
+            url = text[url_start + len("url:"):url_end].strip() if url_start != -1 else "No URL"
+
+            abstrak_start = text.find("Abstrak:")
+            abstrak_text = text[abstrak_start + len("Abstrak:"):].strip()
+            kata_kata = abstrak_text.split()
+            abstrak_20_kata = ' '.join(kata_kata[:20]) + '.....'
+
+            author_start = text.find("Author:")
+            judul_start = text.find("Judul:")
+            judul = text[judul_start + len("Judul:"):author_start].strip()
+
+            results.append({
+                "judul": judul,
+                "abstrak": abstrak_text,
+                "url": url
+            })
+
+        return {"related_documents": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 async def chat_with_document(chat_query: ChatQuery, llm):
     start_time = time.time()
