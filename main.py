@@ -10,6 +10,7 @@ import chromadb
 import torch
 from services import chat_with_document, get_related_documents
 from models import ThesisTitle, ChatQuery
+import os
 
 app = FastAPI()
 
