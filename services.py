@@ -24,23 +24,12 @@ Format ALL responses consistently using these guidelines:
 3. NEVER use HTML or CSS for styling.
 4. Structure your response as follows:
    - Brief summary/introduction (1-4 sentences)
-   - Use #### for main sections, ##### for subsections
 5. For lists:
    - Use 1., 2., 3. for sequential or prioritized items
    - Use - for unordered lists
    - Consistent indentation for nested lists
-6. Use **bold** for important terms, *italics* sparingly
-7. For code:
-   - Use inline code for short snippets
-   - Use code blocks with language specification for longer code segments
-8. For quotes, use > at the beginning of each line.
-    """
 
-    if is_follow_up:
-        follow_up_instruction = """
-**Note:** This is a follow-up question. Make sure to reference the previous answer where relevant and clarify any new information requested by the user.
-"""
-        formatting_instructions += follow_up_instruction
+    """
 
     return f"{formatting_instructions}\n\nUser query: {prompt}\n\nFormatted response:"
 
