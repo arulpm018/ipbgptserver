@@ -32,7 +32,7 @@ chroma_collection = db2.get_or_create_collection("LMITD2")
 vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 index = VectorStoreIndex.from_vector_store(vector_store)
 
-model_name = "meta-llama/Llama-3.2-3B-Instruct"
+model_name = "meta-llama/Llama-3.2-1B-Instruct"
 
 def get_llm():
     quantization_config = BitsAndBytesConfig(
