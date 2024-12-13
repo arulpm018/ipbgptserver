@@ -27,8 +27,8 @@ hf_key = os.getenv("HF_KEY")
 embed_model = "model/"
 Settings.embed_model = HuggingFaceEmbedding(model_name=embed_model, trust_remote_code=True)
 
-db2 = chromadb.PersistentClient(path="/vector_store")
-chroma_collection = db2.get_or_create_collection("LMITD2")
+db2 = chromadb.PersistentClient(path="vector_store")
+chroma_collection = db2.get_or_create_collection("reposight")
 vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 index = VectorStoreIndex.from_vector_store(vector_store)
 
